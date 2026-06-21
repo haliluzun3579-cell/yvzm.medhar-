@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEDHAR — Klinik Karar Destek Sistemi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --primary:#1e3a8a;--primary-light:#2563eb;--primary-dark:#172554;
+  --bg:#f0f4f8;--card:#ffffff;--sidebar:#172554;
+  --text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+  --pathogenic:#dc2626;--pathogenic-bg:#fee2e2;
+  --benign:#059669;--benign-bg:#d1fae5;
+  --warning:#d97706;--warning-bg:#fef3c7;
+  --accent:#0ea5e9;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── LOGIN PAGE ── */
+#loginPage{
+  display:none;align-items:center;justify-content:center;
+  min-height:100vh;
+  background:linear-gradient(135deg,#172554 0%,#1e3a8a 50%,#1d4ed8 100%);
+  position:relative;overflow:hidden;
+}
+#loginPage::before{
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(circle at 20% 50%, rgba(255,255,255,0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.03) 0%, transparent 40%);
+}
+.login-box{
+  background:white;border-radius:20px;
+  width:420px;padding:40px 44px;
+  box-shadow:0 25px 60px rgba(0,0,0,0.3);
+  position:relative;z-index:1;
+}
+.login-logo{
+  text-align:center;margin-bottom:28px;
+}
+.login-logo-icon{
+  width:64px;height:64px;border-radius:16px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.8rem;margin:0 auto 12px;
+  box-shadow:0 8px 20px rgba(37,99,235,0.35);
+}
+.login-logo h1{font-size:1.6rem;font-weight:700;color:var(--primary);letter-spacing:1px}
+.login-logo p{font-size:0.8rem;color:var(--muted);margin-top:4px}
+
+.role-tabs{display:flex;gap:8px;margin-bottom:24px;background:#f1f5f9;padding:4px;border-radius:10px}
+.role-tab{
+  flex:1;padding:8px;border:none;border-radius:8px;
+  font-size:0.8rem;font-weight:600;cursor:pointer;
+  background:transparent;color:var(--muted);
+  transition:all .2s;font-family:'Inter',sans-serif;
+}
+.role-tab.active{background:white;color:var(--primary);box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.role-tab:hover:not(.active){color:var(--primary)}
+
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:0.8rem;font-weight:600;color:var(--text);margin-bottom:6px}
+.form-group input,.form-group select{
+  width:100%;padding:10px 14px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:0.9rem;font-family:'Inter',sans-serif;
+  transition:border-color .2s;outline:none;background:white;
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--primary-light)}
+
+.login-btn{
+  width:100%;padding:12px;border:none;border-radius:10px;
+  background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  color:white;font-size:0.95rem;font-weight:700;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;font-family:'Inter',sans-serif;
+  letter-spacing:.3px;margin-top:4px;
+}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(37,99,235,0.4)}
+.login-btn:active{transform:translateY(0)}
+
+.login-hint{
+  margin-top:20px;padding:12px;background:#f8fafc;border-radius:8px;
+  border:1px solid var(--border);font-size:0.76rem;color:var(--muted);
+  line-height:1.6;
+}
+.login-hint strong{color:var(--primary)}
+
+/* ── LANDING PAGE ── */
+#landingPage{
+  min-height:100vh;
+  background:linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+  padding:40px;
+  display:flex;
+  flex-direction:column;
+}
+.landing-header{
+  display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:50px;
+}
+.landing-title h1{
+  font-size:1.8rem;font-weight:700;color:var(--primary);letter-spacing:0.5px;text-transform:uppercase;
+}
+.landing-title p{
+  font-size:0.95rem;color:var(--muted);margin-top:6px;
+}
+.landing-login-btn{
+  padding:12px 24px;background:linear-gradient(135deg,var(--primary),var(--primary-light));
+  color:white;border:none;border-radius:10px;font-size:0.95rem;font-weight:600;
+  cursor:pointer;transition:transform .15s,box-shadow .15s;font-family:'Inter',sans-serif;
+  box-shadow:0 4px 12px rgba(37,99,235,0.25);
+}
+.landing-login-btn:hover{
+  transform:translateY(-2px);box-shadow:0 8px 20px rgba(37,99,235,0.4);
+}
+.landing-content{
+  max-width:900px;margin:0 auto;width:100%;
+}
+.landing-intro{
+  font-size:1.05rem;line-height:1.6;color:var(--text);margin-bottom:40px;text-align:center;
+}
+.story-card{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  margin-bottom:16px;overflow:hidden;box-shadow:0 4px 6px rgba(0,0,0,0.02);
+}
+.story-header{
+  padding:20px 24px;cursor:pointer;display:flex;justify-content:space-between;
+  align-items:center;font-weight:600;font-size:0.95rem;color:var(--primary);
+  background:white;transition:background 0.2s;
+}
+.story-header:hover{background:#f8fafc;}
+.story-icon{font-size:1.2rem;transition:transform 0.3s;}
+.story-card.open .story-icon{transform:rotate(180deg);}
+.story-body{
+  max-height:0;overflow:hidden;transition:max-height 0.4s ease-out, padding 0.4s ease-out;
+  background:#fafbfc;
+}
+.story-card.open .story-body{
+  max-height:600px;padding:20px 24px;border-top:1px solid var(--border);
+}
+.story-section{margin-bottom:16px;}
+.story-section:last-child{margin-bottom:0;}
+.story-section h4{
+  font-size:0.85rem;font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;
+}
+.story-section p{font-size:0.9rem;color:var(--muted);line-height:1.5;}
+.story-section.sorun h4{color:var(--pathogenic);}
+.story-section.istek h4{color:var(--warning);}
+.story-section.cozum h4{color:var(--benign);}
+
+/* ── APP SHELL ── */
+#appPage{display:none}
+.app-wrap{display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:250px;background:var(--sidebar);color:white;
+  display:flex;flex-direction:column;flex-shrink:0;
+  position:fixed;top:0;left:0;bottom:0;z-index:50;
+  transition:transform .3s;
+}
+.sidebar-header{
+  padding:24px 20px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.sidebar-logo{font-size:1.3rem;font-weight:700;letter-spacing:1px}
+.sidebar-logo span{opacity:.6;font-weight:300;font-size:.85rem}
+.user-info{
+  margin-top:12px;padding:10px 12px;
+  background:rgba(255,255,255,0.06);border-radius:8px;
+}
+.user-name{font-size:.85rem;font-weight:600}
+.user-role-badge{
+  display:inline-block;margin-top:4px;padding:2px 8px;
+  border-radius:100px;font-size:.68rem;font-weight:700;
+  background:rgba(14,165,233,0.25);color:#7dd3fc;letter-spacing:.5px;
+}
+.sidebar-nav{padding:16px 12px;flex:1}
+.nav-section-title{
+  font-size:.65rem;font-weight:700;letter-spacing:1.5px;
+  color:rgba(255,255,255,.35);text-transform:uppercase;
+  padding:0 8px;margin-bottom:6px;margin-top:12px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;border-radius:8px;cursor:pointer;
+  font-size:.85rem;font-weight:500;color:rgba(255,255,255,.7);
+  transition:all .15s;margin-bottom:2px;
+}
+.nav-item:hover{background:rgba(255,255,255,.08);color:white}
+.nav-item.active{background:var(--primary-light);color:white;font-weight:600}
+.nav-item .icon{font-size:1rem;width:20px;text-align:center}
+.sidebar-footer{
+  padding:16px 20px;border-top:1px solid rgba(255,255,255,.08);
+}
+.logout-btn{
+  width:100%;padding:9px;border:1px solid rgba(255,255,255,.15);
+  border-radius:8px;background:transparent;color:rgba(255,255,255,.7);
+  cursor:pointer;font-size:.82rem;font-family:'Inter',sans-serif;
+  transition:all .15s;
+}
+.logout-btn:hover{background:rgba(255,255,255,.08);color:white}
+
+/* ── MAIN CONTENT ── */
+.main-content{
+  margin-left:250px;flex:1;padding:28px 32px;
+  min-height:100vh;
+}
+.page-header{margin-bottom:28px}
+.page-title{font-size:1.5rem;font-weight:700;color:var(--primary)}
+.page-subtitle{font-size:.85rem;color:var(--muted);margin-top:4px}
+
+/* ── PANELS (views) ── */
+.panel{display:none}
+.panel.active{display:block}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{
+  background:var(--card);border-radius:12px;padding:20px;
+  border:1px solid var(--border);
+  display:flex;flex-direction:column;gap:8px;
+}
+.stat-icon{font-size:1.4rem}
+.stat-val{font-size:1.8rem;font-weight:700;color:var(--primary)}
+.stat-label{font-size:.78rem;color:var(--muted);font-weight:500}
+.stat-delta{font-size:.75rem;font-weight:600;color:var(--benign)}
+
+/* ── CARDS ── */
+.card{
+  background:var(--card);border-radius:12px;padding:24px;
+  border:1px solid var(--border);margin-bottom:20px;
+}
+.card-title{
+  font-size:.95rem;font-weight:700;color:var(--primary);
+  margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.card-title .badge{
+  padding:2px 8px;border-radius:100px;font-size:.68rem;
+  font-weight:700;background:#dbeafe;color:var(--primary-light);
+}
+
+/* ── UPLOAD ── */
+.upload-zone{
+  border:2px dashed var(--border);border-radius:10px;
+  padding:40px;text-align:center;cursor:pointer;
+  transition:all .2s;background:#fafbfc;
+}
+.upload-zone:hover{border-color:var(--primary-light);background:#eff6ff}
+.upload-zone-icon{font-size:2.5rem;margin-bottom:10px}
+.upload-zone h3{font-size:.95rem;font-weight:600;color:var(--primary);margin-bottom:4px}
+.upload-zone p{font-size:.78rem;color:var(--muted)}
+
+/* ── SLIDER ── */
+.slider-wrap{margin-top:12px}
+.slider-labels{display:flex;justify-content:space-between;font-size:.8rem;font-weight:600;margin-bottom:6px}
+.slider-labels span:last-child{color:var(--primary-light)}
+input[type=range]{
+  width:100%;height:7px;border-radius:10px;
+  background:linear-gradient(to right,var(--primary-light) 50%,#e2e8f0 50%);
+  outline:none;-webkit-appearance:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;
+  border-radius:50%;background:var(--primary-light);
+  box-shadow:0 2px 6px rgba(37,99,235,.4);cursor:pointer;
+}
+.slider-hint{font-size:.72rem;color:var(--muted);margin-top:6px}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;margin-top:12px}
+table{width:100%;border-collapse:collapse;font-size:.82rem}
+th{
+  padding:10px 14px;background:#f8fafc;font-weight:700;
+  color:var(--muted);text-align:left;border-bottom:2px solid var(--border);
+  font-size:.73rem;letter-spacing:.5px;text-transform:uppercase;
+}
+td{padding:11px 14px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+tr:hover td{background:#fafbff}
+.badge-path{
+  padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:700;
+  background:var(--pathogenic-bg);color:var(--pathogenic);
+}
+.badge-ben{
+  padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:700;
+  background:var(--benign-bg);color:var(--benign);
+}
+.badge-vus{
+  padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:700;
+  background:var(--warning-bg);color:var(--warning);
+}
+.conf-bar{height:6px;border-radius:3px;background:#e2e8f0;width:80px;display:inline-block;vertical-align:middle;margin-right:6px;overflow:hidden}
+.conf-fill{height:100%;border-radius:3px}
+
+/* ── METRIC BOX ── */
+.metric-row{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.metric-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 14px;background:#f8fafc;border-radius:8px;
+  border:1px solid var(--border);
+}
+.metric-name{font-size:.82rem;font-weight:500;color:var(--muted)}
+.metric-val{font-size:1rem;font-weight:700;color:var(--primary)}
+
+/* ── PERF TABLE ── */
+.perf-panel-select{
+  display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;
+}
+.panel-btn{
+  padding:6px 16px;border-radius:8px;font-size:.8rem;font-weight:600;
+  cursor:pointer;border:1.5px solid var(--border);background:white;
+  color:var(--muted);transition:all .15s;font-family:'Inter',sans-serif;
+}
+.panel-btn.active{background:var(--primary);color:white;border-color:var(--primary)}
+.panel-btn:hover:not(.active){border-color:var(--primary-light);color:var(--primary-light)}
+
+/* ── ADMIN TABLE ── */
+.admin-table td .role-chip{
+  padding:3px 10px;border-radius:100px;font-size:.72rem;font-weight:700;
+}
+.role-klinisyen{background:#dbeafe;color:#1d4ed8}
+.role-uzman{background:#d1fae5;color:#065f46}
+.role-analist{background:#fef3c7;color:#92400e}
+.role-admin{background:#fee2e2;color:#991b1b}
+
+/* ── GRID LAYOUTS ── */
+.grid-2{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+.grid-2-eq{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:900px){.grid-2,.grid-2-eq{grid-template-columns:1fr}.stats-row{grid-template-columns:1fr 1fr}}
+
+/* ── FORM INPUTS in app ── */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.8rem;font-weight:600;color:var(--text);margin-bottom:5px}
+.field input,.field select,.field textarea{
+  width:100%;padding:9px 12px;border:1.5px solid var(--border);
+  border-radius:8px;font-size:.85rem;font-family:'Inter',sans-serif;
+  outline:none;transition:border-color .2s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--primary-light)}
+.btn{
+  padding:9px 20px;border:none;border-radius:8px;font-size:.85rem;
+  font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;
+}
+.btn-primary{background:var(--primary-light);color:white}
+.btn-primary:hover{background:var(--primary)}
+.btn-secondary{background:#f1f5f9;color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:#e2e8f0}
+.btn-danger{background:#fee2e2;color:var(--pathogenic)}
+.btn-danger:hover{background:#fecaca}
+
+/* ── ALERTS ── */
+.alert{
+  padding:12px 16px;border-radius:8px;font-size:.83rem;
+  display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;
+}
+.alert-info{background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8}
+.alert-warning{background:var(--warning-bg);border:1px solid #fde68a;color:var(--warning)}
+
+/* ── EXPLAIN BARS ── */
+.explain-list{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.explain-item{display:flex;align-items:center;gap:10px;font-size:.82rem}
+.explain-label{width:200px;flex-shrink:0;color:var(--muted);font-weight:500}
+.explain-bar-bg{flex:1;height:10px;background:#e2e8f0;border-radius:5px;overflow:hidden}
+.explain-bar-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,var(--primary-light),var(--accent))}
+.explain-score{width:44px;text-align:right;font-weight:700;font-size:.8rem;color:var(--primary);font-family:'JetBrains Mono',monospace}
+
+/* ── ACTIVITY LOG ── */
+.log-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto}
+.log-item{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:10px 12px;background:#f8fafc;border-radius:8px;
+  border:1px solid var(--border);
+}
+.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.log-text{font-size:.8rem;color:var(--text);flex:1}
+.log-time{font-size:.72rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:10px}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LANDING PAGE ══════════════ -->
+<div id="landingPage">
+  <div class="landing-header">
+    <div class="landing-title">
+      <h1>MEDHAR Genomik Destek Sistemi</h1>
+      <p>Geliştiriciler: Nuh Yasin Çimen ve Halil Hadra Uzun</p>
+    </div>
+    <button class="landing-login-btn" onclick="goToLogin()">Sisteme Giriş Yap / Hesap 👤</button>
+  </div>
+  
+  <div class="landing-content">
+    <div class="landing-intro">
+      Günümüzün karmaşık genomik verilerini analiz etmek için geliştirilen MEDHAR, uzmanların klinik kararlarını desteklemek ve genetik teşhis süreçlerini hızlandırmak amacıyla tasarlanmıştır. Aşağıda sistemin geliştirmesine yön veren temel kullanıcı senaryolarını inceleyebilirsiniz.
+    </div>
+
+    <!-- Card 1 -->
+    <div class="story-card" id="story1">
+      <div class="story-header" onclick="toggleStory('story1')">
+        <span>A*** K*** — İTÜ Moleküler Biyoloji ve Genetik Mezunu, Özel Laboratuvar Çalışanı</span>
+        <span class="story-icon">▼</span>
+      </div>
+      <div class="story-body">
+        <div class="story-section sorun">
+          <h4>❌ Yaşanan Sorun</h4>
+          <p>Her bir genin birden fazla verisi ve geni tanımlayan birçok tablo olduğu için her tabloyla teker teker uğraşmanın zorluğu; laborant ve doktorların "missense" (anlamı belirsiz) varyantları net belirleyememesi sebebiyle oluşan klinik/medikal sorunlar.</p>
+        </div>
+        <div class="story-section istek">
+          <h4>💡 İstek</h4>
+          <p>Belirli gen paneli verileri yüklendiğinde, tüm bu tablolara tek bir yerden erişebilmek ve modelin varyantın patojenik mi yoksa benign mi olduğunu açıklamalarıyla rahatça belirtmesi.</p>
+        </div>
+        <div class="story-section cozum">
+          <h4>✅ Teknolojik Çözüm</h4>
+          <p>Çok boyutlu genomik verilerin LightGBM/XGBoost ile işlenmesi ve SHAP/LIME tabanlı Açıklanabilirlik modülü sayesinde model kararlarının saniyeler içinde şeffaf raporlanması.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="story-card" id="story2">
+      <div class="story-header" onclick="toggleStory('story2')">
+        <span>B*** G*** — Tıbbi Genetik Uzmanı ve Akademisyen</span>
+        <span class="story-icon">▼</span>
+      </div>
+      <div class="story-body">
+        <div class="story-section sorun">
+          <h4>❌ Yaşanan Sorun</h4>
+          <p>Poliklinik şartlarında güncel varyant durumlarını kontrol etmek amacıyla ClinVar, gnomAD gibi dış veri tabanlarında manuel literatür taraması yapmanın devasa zaman kaybı yaratması.</p>
+        </div>
+        <div class="story-section istek">
+          <h4>💡 İstek</h4>
+          <p>Uluslararası veri tabanlarıyla otomatik senkronize olan ve eksik klinik verileri tolere edebilen akıllı bir karar destek yapısı.</p>
+        </div>
+        <div class="story-section cozum">
+          <h4>✅ Teknolojik Çözüm</h4>
+          <p>GraphQL ve REST API entegrasyonları ile gerçek zamanlı ClinVar senkronizasyonu; eksik verilerin KNN Imputer (K=5) algoritması ile veri sızıntısı olmadan otomatik tamamlanması.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="story-card" id="story3">
+      <div class="story-header" onclick="toggleStory('story3')">
+        <span>D*** Y*** — Onkoloji Uzmanı (Klinisyen)</span>
+        <span class="story-icon">▼</span>
+      </div>
+      <div class="story-body">
+        <div class="story-section sorun">
+          <h4>❌ Yaşanan Sorun</h4>
+          <p>Gelen test raporlarında varyantların direkt "VUS (Anlamı Belirsiz)" olarak etiketlenmesinin hastanın tedavi rotasını çizerken tıkanıklık yaratması ve risk toleransının kişiselleştirilememesi.</p>
+        </div>
+        <div class="story-section istek">
+          <h4>💡 İstek</h4>
+          <p>Hastanın durumuna ve klinik risk toleransına göre patojenite skorlama sınır değerini esnekçe ayarlayabilme imkanı.</p>
+        </div>
+        <div class="story-section cozum">
+          <h4>✅ Teknolojik Çözüm</h4>
+          <p>Sisteme entegre edilen "Dinamik Karar Eşiği (τ)" kaydırma çubuğu (slider) sayesinde klinisyenin sensitivite ve spesifite dengesini vakaya özel optimize edebilmesi.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">🧬</div>
+      <h1>MEDHAR</h1>
+      <p>Klinik Karar Destek Sistemi v3.0</p>
+    </div>
+
+    <div class="role-tabs">
+      <button class="role-tab active" onclick="selectRole('klinisyen',this)">🩺 Klinisyen</button>
+      <button class="role-tab" onclick="selectRole('uzman',this)">🔬 Gen. Uzman</button>
+      <button class="role-tab" onclick="selectRole('analist',this)">📊 Analist</button>
+      <button class="role-tab" onclick="selectRole('admin',this)">⚙️ Admin</button>
+    </div>
+
+    <div class="form-group">
+      <label>E-posta Adresi</label>
+      <input type="email" id="loginEmail" placeholder="kullanici@medhar.tr" value="klinisyen@medhar.tr">
+    </div>
+    <div class="form-group">
+      <label>Şifre</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" value="••••••••">
+    </div>
+
+    <button class="login-btn" onclick="doLogin()">Sisteme Giriş Yap →</button>
+
+    <div class="login-hint">
+      <strong>Demo Rolleri:</strong><br>
+      🩺 Klinisyen — varyant yükle, rapor al<br>
+      🔬 Genetik Uzman — açıklanabilirlik analizi<br>
+      📊 Veri Analisti — model eğitimi & performans<br>
+      ⚙️ Admin — kullanıcı yönetimi & sistem log
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ APP ══════════════ -->
+<div id="appPage">
+  <div class="app-wrap">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">MEDHAR <span>v3.0</span></div>
+        <div class="user-info">
+          <div class="user-name" id="sidebarUserName">Dr. Ayşe Kaya</div>
+          <div class="user-role-badge" id="sidebarRoleBadge">KLİNİSYEN</div>
+        </div>
+      </div>
+
+      <div class="sidebar-nav" id="sidebarNav">
+        <!-- JS tarafından doldurulacak -->
+      </div>
+
+      <div class="sidebar-footer">
+        <button class="logout-btn" onclick="doLogout()">⬅ Çıkış Yap</button>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="page-header">
+          <div class="page-title">Ana Panel</div>
+          <div class="page-subtitle" id="dashSubtitle">Hoş geldiniz — bugün 4 yeni varyant analizi bekliyor</div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-icon">🧬</div>
+            <div class="stat-val">2.931</div>
+            <div class="stat-label">Toplam Analiz (MASTER)</div>
+            <div class="stat-delta">353 Ham Özellik</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">❌</div>
+            <div class="stat-val" style="color:var(--pathogenic)">2.149</div>
+            <div class="stat-label">Patojenik Varyant</div>
+            <div class="stat-delta" style="color:var(--muted)">%73.3 oran</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-val" style="color:var(--benign)">782</div>
+            <div class="stat-label">Benign Varyant</div>
+            <div class="stat-delta" style="color:var(--benign)">%26.7 oran</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📈</div>
+            <div class="stat-val">0.976</div>
+            <div class="stat-label">Güncel Model AUC</div>
+            <div class="stat-delta">Ensemble (MASTER)</div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="card">
+              <div class="card-title">📋 Son Analizler</div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>Varyant ID</th><th>Gen / Mutasyon</th><th>Panel</th><th>Sonuç</th><th>Tarih</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>VAR_004572</code></td><td>TP53 (R-&gt;Q)</td><td>Herediter Kanser</td><td><span class="badge-path">Patojenik</span></td><td>Bugün 14:22</td></tr>
+                    <tr><td><code>VAR_001979</code></td><td>CFTR (L-&gt;P)</td><td>CFTR Paneli</td><td><span class="badge-path">Patojenik</span></td><td>Bugün 11:05</td></tr>
+                    <tr><td><code>VAR_002962</code></td><td>BMPR2 (F-&gt;L)</td><td>PAH Paneli</td><td><span class="badge-ben">Benign</span></td><td>Dün 16:48</td></tr>
+                    <tr><td><code>VAR_006245</code></td><td>GNAS (V-&gt;I)</td><td>Genel (MASTER)</td><td><span class="badge-ben">Benign</span></td><td>Dün 09:30</td></tr>
+                    <tr><td><code>VAR_001918</code></td><td>CFTR (S-&gt;L)</td><td>CFTR Paneli</td><td><span class="badge-path">Patojenik</span></td><td>2 gün önce</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">🔔 Sistem Bildirimleri</div>
+              <div class="log-list">
+                <div class="log-item"><div class="log-dot" style="background:var(--benign)"></div><div><div class="log-text">ClinVar veri tabanı başarıyla senkronize edildi</div><div class="log-time">08:00</div></div></div>
+                <div class="log-item"><div class="log-dot" style="background:var(--accent)"></div><div><div class="log-text">LightGBM CFTR modeli production ortamına alındı (AUC: 0.9901)</div><div class="log-time">Dün</div></div></div>
+                <div class="log-item"><div class="log-dot" style="background:var(--warning)"></div><div><div class="log-text">PAH panelinde 3 VUS vakası uzman incelemesine yönlendirildi</div><div class="log-time">2 gün</div></div></div>
+                <div class="log-item"><div class="log-dot" style="background:var(--benign)"></div><div><div class="log-text">gnomAD popülasyon verisi güncellendi (v4.1)</div><div class="log-time">3 gün</div></div></div>
+              </div>
+            </div>
+            <div class="card" style="margin-top:0">
+              <div class="card-title">🎛️ Sistem Durumu</div>
+              <div class="metric-row">
+                <div class="metric-item"><span class="metric-name">🟢 API Servisi</span><span class="metric-val" style="color:var(--benign);font-size:.85rem">Çalışıyor</span></div>
+                <div class="metric-item"><span class="metric-name">🟢 Veritabanı</span><span class="metric-val" style="color:var(--benign);font-size:.85rem">Çalışıyor</span></div>
+                <div class="metric-item"><span class="metric-name">🟡 ClinVar API</span><span class="metric-val" style="color:var(--warning);font-size:.85rem">Yavaş</span></div>
+                <div class="metric-item"><span class="metric-name">🟢 Model Motoru</span><span class="metric-val" style="color:var(--benign);font-size:.85rem">Hazır</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── VARIANT ANALYSIS ── -->
+      <div class="panel" id="panel-analiz">
+        <div class="page-header">
+          <div class="page-title">Varyant Analizi</div>
+          <div class="page-subtitle">Varyant profili yükleyin ve ML modeli ile sınıflandırın</div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="card">
+              <div class="card-title">📁 Genomik Veri Yükleme <span class="badge">VCF / CSV</span></div>
+              <div class="alert alert-info">ℹ️ Sistem KNN Imputer (K=5) ile eksik verileri otomatik dolduracak ve etiket sızıntısı riski taşıyan sütunları otomatik ayıklayacaktır.</div>
+              <div class="upload-zone" onclick="simulateUpload()">
+                <div class="upload-zone-icon">📂</div>
+                <h3>Dosyayı Sürükleyin veya Tıklayın</h3>
+                <p>Desteklenen formatlar: .vcf, .csv, .json — Maks. 50 MB</p>
+              </div>
+              <div style="margin-top:16px;display:flex;gap:10px">
+                <select style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Inter',sans-serif;font-size:.85rem">
+                  <option>Herediter Kanser Paneli</option>
+                  <option>PAH Paneli</option>
+                  <option>CFTR Paneli</option>
+                  <option>Genel Veri Seti</option>
+                </select>
+                <button class="btn btn-primary" onclick="runAnalysis()">▶ Analizi Başlat</button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">🧬 Sınıflandırma Sonuçları</div>
+              <div class="tbl-wrap">
+                <table id="variantTable">
+                  <thead><tr><th>Varyant ID</th><th>Krom.</th><th>Gen</th><th>Güven</th><th>Sonuç</th></tr></thead>
+                  <tbody id="variantTbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">🎛️ Dinamik Karar Eşiği (τ)</div>
+              <p style="font-size:.8rem;color:var(--muted);margin-bottom:12px">Klinik risk toleransınıza göre patojenite sınır değerini ayarlayın.</p>
+              <div class="slider-wrap">
+                <div class="slider-labels">
+                  <span>Patojenite Eşiği (τ):</span>
+                  <span id="thresholdDisplay" style="color:var(--primary-light);font-family:'JetBrains Mono',monospace">0.50</span>
+                </div>
+                <input type="range" min="0" max="1" step="0.05" value="0.50" id="thresholdSlider" oninput="updateThreshold(this.value)">
+                <div class="slider-hint">Düşük τ → Daha duyarlı (daha fazla patojenik) · Yüksek τ → Daha özgül</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">📊 Özet İstatistikler</div>
+              <div class="metric-row">
+                <div class="metric-item"><span class="metric-name">Toplam Varyant</span><span class="metric-val" id="totalCount">4</span></div>
+                <div class="metric-item"><span class="metric-name" style="color:var(--pathogenic)">❌ Patojenik</span><span class="metric-val" id="pathCount" style="color:var(--pathogenic)">2</span></div>
+                <div class="metric-item"><span class="metric-name" style="color:var(--benign)">✅ Benign</span><span class="metric-val" id="benCount" style="color:var(--benign)">2</span></div>
+                <div class="metric-item"><span class="metric-name" style="color:var(--warning)">⚠️ VUS</span><span class="metric-val" id="vusCount" style="color:var(--warning)">0</span></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">⬇️ Rapor İndir</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <button class="btn btn-secondary" onclick="alert('PDF rapor hazırlanıyor...')">📄 PDF Raporu İndir</button>
+                <button class="btn btn-secondary" onclick="alert('JSON dışa aktarılıyor...')">📋 JSON Dışa Aktar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── EXPLAIN (Uzman) ── -->
+      <div class="panel" id="panel-explain">
+        <div class="page-header">
+          <div class="page-title">Açıklanabilirlik Analizi</div>
+          <div class="page-subtitle">Model kararlarının özellik önem dereceleri ile açıklanması</div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="card">
+              <div class="card-title">🔬 Varyant Seç</div>
+              <div class="field">
+                <label>Varyant ID</label>
+                <select id="explainVariantSelect" onchange="updateExplain(this.value)">
+                  <option value="VAR_004572">VAR_004572 — TP53 (Chr17) — Patojenik</option>
+                  <option value="VAR_001979">VAR_001979 — CFTR (Chr7) — Patojenik</option>
+                  <option value="VAR_002962">VAR_002962 — BMPR2 (Chr12) — Benign</option>
+                  <option value="VAR_006245">VAR_006245 — GNAS (Chr1) — Benign (VUS)</option>
+                </select>
+              </div>
+              <div class="alert alert-info" id="explainSummary">
+                ℹ️ VAR_004572 (TP53) → Karar: <strong>PATOJENİK</strong> · Güven: %94 · τ=0.50
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">📊 Özellik Önem Dereceleri (Top 10)</div>
+              <div class="explain-list" id="explainBars"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">🧾 Klinik Yorum</div>
+              <div style="font-size:.83rem;line-height:1.7;color:var(--text)">
+                <p style="margin-bottom:10px">Bu varyant <strong>yüksek in-silico risk skoru</strong> ve <strong>düşük popülasyon frekansı</strong> kombinasyonu nedeniyle patojenik olarak sınıflandırılmıştır.</p>
+                <p style="margin-bottom:10px">Genomik konum (Chr17: BRCA bölgesi) ve protein yapısındaki değişim, modelin patojenik ayrımı yapmasında en güçlü belirleyici olmuştur.</p>
+                <p style="color:var(--muted);font-size:.78rem">⚠️ Bu analiz bir karar destek çıktısıdır. Nihai klinik karar uzman değerlendirmesini gerektirir.</p>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">📋 ClinVar Referansı</div>
+              <div class="metric-row">
+                <div class="metric-item"><span class="metric-name">Review Status</span><span class="metric-val" style="font-size:.8rem" id="clinvarReview">★★★☆ (3/4)</span></div>
+                <div class="metric-item"><span class="metric-name">Submitter Sayısı</span><span class="metric-val" id="clinvarSubmitters">21</span></div>
+                <div class="metric-item"><span class="metric-name">ACMG Sınıfı</span><span class="metric-val" style="font-size:.8rem;color:var(--pathogenic)" id="clinvarAcmg">Pathogenic</span></div>
+                <div class="metric-item"><span class="metric-name">gnomAD Freq.</span><span class="metric-val" style="font-family:'JetBrains Mono',monospace;font-size:.85rem" id="clinvarFreq">0.00004</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MODEL EĞİTİM (Analist) ── -->
+      <div class="panel" id="panel-egitim">
+        <div class="page-header">
+          <div class="page-title">Model Eğitimi</div>
+          <div class="page-subtitle">XGBoost / LightGBM / Random Forest modellerini yeniden eğitin</div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="card">
+              <div class="card-title">⚙️ Eğitim Parametreleri</div>
+              <div class="field"><label>Model Tipi</label>
+                <select><option>LightGBM (Önerilen)</option><option>XGBoost</option><option>Random Forest</option><option>Tüm Modeller</option></select>
+              </div>
+              <div class="field"><label>Gen Paneli</label>
+                <select><option>Tüm Paneller</option><option>Herediter Kanser</option><option>PAH</option><option>CFTR</option></select>
+              </div>
+              <div class="grid-2-eq" style="margin-bottom:14px">
+                <div class="field" style="margin-bottom:0"><label>K-Fold (CV)</label><input type="number" value="5" min="3" max="10"></div>
+                <div class="field" style="margin-bottom:0"><label>Early Stopping</label><input type="number" value="50"></div>
+              </div>
+              <div class="field"><label>Düzenleştirme</label>
+                <select><option>L1 + L2 (Önerilen)</option><option>Yalnız L1</option><option>Yalnız L2</option><option>Yok</option></select>
+              </div>
+              <button class="btn btn-primary" onclick="simulateTrain()" style="width:100%">▶ Eğitimi Başlat (3-5 dk)</button>
+            </div>
+            <div class="card">
+              <div class="card-title">📜 Eğitim Logu</div>
+              <div class="log-list" id="trainLog">
+                <div class="log-item"><div class="log-dot" style="background:var(--benign)"></div><div><div class="log-text">Sistem hazır — eğitimi başlatmak için butona tıklayın</div><div class="log-time">Bekliyor</div></div></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">📈 Panel Bazlı Performans</div>
+              <div class="perf-panel-select">
+                <button class="panel-btn active" onclick="selectPerfPanel('kanser',this)">Herediter K.</button>
+                <button class="panel-btn" onclick="selectPerfPanel('pah',this)">PAH</button>
+                <button class="panel-btn" onclick="selectPerfPanel('cftr',this)">CFTR</button>
+                <button class="panel-btn" onclick="selectPerfPanel('genel',this)">Genel</button>
+              </div>
+              <div id="perfTable"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ADMIN ── -->
+      <div class="panel" id="panel-admin">
+        <div class="page-header">
+          <div class="page-title">Kullanıcı Yönetimi</div>
+          <div class="page-subtitle">Sisteme kayıtlı kullanıcılar ve rol yönetimi</div>
+        </div>
+        <div class="grid-2">
+          <div>
+            <div class="card">
+              <div class="card-title">👥 Kullanıcı Listesi</div>
+              <div class="tbl-wrap">
+                <table>
+                  <thead><tr><th>Ad Soyad</th><th>E-posta</th><th>Rol</th><th>Son Giriş</th><th>İşlem</th></tr></thead>
+                  <tbody>
+                    <tr><td>Dr. Ayşe Kaya</td><td>klinisyen@medhar.tr</td><td><span class="role-chip role-klinisyen">Klinisyen</span></td><td>Bugün</td><td><button class="btn btn-secondary" style="padding:3px 10px;font-size:.72rem">Düzenle</button></td></tr>
+                    <tr><td>Dr. Mehmet Demir</td><td>uzman@medhar.tr</td><td><span class="role-chip role-uzman">Gen. Uzman</span></td><td>Dün</td><td><button class="btn btn-secondary" style="padding:3px 10px;font-size:.72rem">Düzenle</button></td></tr>
+                    <tr><td>Zeynep Yıldız</td><td>analist@medhar.tr</td><td><span class="role-chip role-analist">Analist</span></td><td>2 gün</td><td><button class="btn btn-secondary" style="padding:3px 10px;font-size:.72rem">Düzenle</button></td></tr>
+                    <tr><td>Sistem Admin</td><td>admin@medhar.tr</td><td><span class="role-chip role-admin">Admin</span></td><td>Bugün</td><td><button class="btn btn-secondary" style="padding:3px 10px;font-size:.72rem">Düzenle</button></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style="margin-top:12px"><button class="btn btn-primary">+ Yeni Kullanıcı Ekle</button></div>
+            </div>
+          </div>
+          <div>
+            <div class="card">
+              <div class="card-title">📋 Sistem Audit Log</div>
+              <div class="log-list">
+                <div class="log-item"><div class="log-dot" style="background:var(--accent)"></div><div><div class="log-text">klinisyen@medhar.tr — POST /variants/classify (VAR_1042)</div><div class="log-time">14:22:05</div></div></div>
+                <div class="log-item"><div class="log-dot" style="background:var(--benign)"></div><div><div class="log-text">uzman@medhar.tr — GET /variants/1041/explain</div><div class="log-time">11:08:33</div></div></div>
+                <div class="log-item"><div class="log-dot" style="background:var(--warning)"></div><div><div class="log-text">analist@medhar.tr — POST /model/train (LightGBM)</div><div class="log-time">09:45:12</div></div></div>
+                <div class="log-item"><div class="log-dot" style="background:var(--accent)"></div><div><div class="log-text">admin@medhar.tr — POST /admin/users (yeni kullanıcı)</div><div class="log-time">Dün 16:00</div></div></div>
+                <div class="log-item"><div class="log-dot" style="background:var(--benign)"></div><div><div class="log-text">Sistem — ClinVar otomatik senkronizasyon tamamlandı</div><div class="log-time">Dün 08:00</div></div></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">🔌 Dış Ortam Durumu</div>
+              <div class="metric-row">
+                <div class="metric-item"><span class="metric-name">ClinVar API</span><span class="metric-val" style="color:var(--warning);font-size:.82rem">⚠ Yavaş (850ms)</span></div>
+                <div class="metric-item"><span class="metric-name">ClinGen GraphQL</span><span class="metric-val" style="color:var(--benign);font-size:.82rem">✅ Normal (120ms)</span></div>
+                <div class="metric-item"><span class="metric-name">gnomAD GraphQL</span><span class="metric-val" style="color:var(--benign);font-size:.82rem">✅ Normal (95ms)</span></div>
+                <div class="metric-item"><span class="metric-name">UniProt REST</span><span class="metric-val" style="color:var(--benign);font-size:.82rem">✅ Normal (210ms)</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /app-wrap -->
+</div><!-- /appPage -->
+
+<script>
+// ── Data ──
+const ROLES = {
+  klinisyen:{ label:"KLİNİSYEN", name:"Dr. Ayşe Kaya",
+    nav:[
+      {icon:"🏠",text:"Ana Panel",panel:"dashboard"},
+      {icon:"🧬",text:"Varyant Analizi",panel:"analiz"},
+    ]
+  },
+  uzman:{ label:"GEN. UZMANI", name:"Dr. Mehmet Demir",
+    nav:[
+      {icon:"🏠",text:"Ana Panel",panel:"dashboard"},
+      {icon:"🧬",text:"Varyant Analizi",panel:"analiz"},
+      {icon:"🔬",text:"Açıklanabilirlik",panel:"explain"},
+    ]
+  },
+  analist:{ label:"VERİ ANALİSTİ", name:"Zeynep Yıldız",
+    nav:[
+      {icon:"🏠",text:"Ana Panel",panel:"dashboard"},
+      {icon:"🧬",text:"Varyant Analizi",panel:"analiz"},
+      {icon:"🔬",text:"Açıklanabilirlik",panel:"explain"},
+      {icon:"⚙️",text:"Model Eğitimi",panel:"egitim"},
+    ]
+  },
+  admin:{ label:"SİSTEM ADMİN", name:"Sistem Admin",
+    nav:[
+      {icon:"🏠",text:"Ana Panel",panel:"dashboard"},
+      {icon:"🧬",text:"Varyant Analizi",panel:"analiz"},
+      {icon:"🔬",text:"Açıklanabilirlik",panel:"explain"},
+      {icon:"⚙️",text:"Model Eğitimi",panel:"egitim"},
+      {icon:"👥",text:"Kullanıcı Yönetimi",panel:"admin"},
+    ]
+  }
+};
+
+let currentRole='klinisyen', selectedRoleForLogin='klinisyen';
+
+function toggleStory(id){
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+
+function goToLogin(){
+  document.getElementById('landingPage').style.display='none';
+  document.getElementById('loginPage').style.display='flex';
+}
+
+function selectRole(role,btn){
+  selectedRoleForLogin=role;
+  document.querySelectorAll('.role-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const emails={klinisyen:'klinisyen@medhar.tr',uzman:'uzman@medhar.tr',analist:'analist@medhar.tr',admin:'admin@medhar.tr'};
+  document.getElementById('loginEmail').value=emails[role];
+}
+
+function doLogin(){
+  currentRole=selectedRoleForLogin;
+  const r=ROLES[currentRole];
+  document.getElementById('sidebarUserName').textContent=r.name;
+  document.getElementById('sidebarRoleBadge').textContent=r.label;
+  buildNav(r.nav);
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('appPage').style.display='block';
+  showPanel('dashboard');
+  renderVariants();
+  updateExplain('VAR_004572');
+  renderPerfTable('kanser');
+}
+
+function doLogout(){
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('appPage').style.display='none';
+}
+
+function buildNav(items){
+  const nav=document.getElementById('sidebarNav');
+  nav.innerHTML='<div class="nav-section-title">Menü</div>';
+  items.forEach(item=>{
+    const d=document.createElement('div');
+    d.className='nav-item';
+    d.innerHTML=`<span class="icon">${item.icon}</span><span>${item.text}</span>`;
+    d.onclick=()=>showPanel(item.panel,d);
+    nav.appendChild(d);
+  });
+  nav.querySelector('.nav-item').classList.add('active');
+}
+
+function showPanel(panelId,navEl){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const el=document.getElementById('panel-'+panelId);
+  if(el) el.classList.add('active');
+  if(navEl) navEl.classList.add('active');
+  else{
+    const items=document.querySelectorAll('.nav-item');
+    items.forEach(i=>{if(i.textContent.includes(panelId==='dashboard'?'Ana':panelId==='analiz'?'Varyant':panelId==='explain'?'Açık':panelId==='egitim'?'Model':'Kull')) i.classList.add('active');});
+  }
+}
+
+// ── Variant table ──
+const MOCK=[
+  {id:"VAR_004572",chr:"Chr17",gen:"TP53",prob:0.94},
+  {id:"VAR_001979",chr:"Chr7",gen:"CFTR",prob:0.88},
+  {id:"VAR_002962",chr:"Chr12",gen:"BMPR2",prob:0.12},
+  {id:"VAR_006245",chr:"Chr1",gen:"GNAS",prob:0.48}
+];
+
+function renderVariants(){
+  const tau=parseFloat(document.getElementById('thresholdSlider').value);
+  const VUS_MARGIN=0.08;
+  let p=0,b=0,v=0,html='';
+  MOCK.forEach(row=>{
+    let label,cls;
+    if(row.prob>=tau+VUS_MARGIN){label='❌ Patojenik';cls='badge-path';p++;}
+    else if(row.prob<=tau-VUS_MARGIN){label='✅ Benign';cls='badge-ben';b++;}
+    else{label='⚠️ VUS';cls='badge-vus';v++;}
+    const pct=Math.round(row.prob*100);
+    const fillColor=row.prob>=0.6?'#dc2626':row.prob<=0.35?'#059669':'#d97706';
+    html+=`<tr>
+      <td><code>${row.id}</code></td>
+      <td>${row.chr}</td>
+      <td><strong>${row.gen}</strong></td>
+      <td><span class="conf-bar"><span class="conf-fill" style="width:${pct}%;background:${fillColor}"></span></span>%${pct}</td>
+      <td><span class="${cls}">${label}</span></td>
+    </tr>`;
+  });
+  document.getElementById('variantTbody').innerHTML=html;
+  document.getElementById('totalCount').textContent=MOCK.length;
+  document.getElementById('pathCount').textContent=p;
+  document.getElementById('benCount').textContent=b;
+  document.getElementById('vusCount').textContent=v;
+}
+
+function updateThreshold(v){
+  document.getElementById('thresholdDisplay').textContent=parseFloat(v).toFixed(2);
+  const pct=parseFloat(v)*100;
+  document.getElementById('thresholdSlider').style.background=
+    `linear-gradient(to right,var(--primary-light) ${pct}%,#e2e8f0 ${pct}%)`;
+  renderVariants();
+}
+
+function simulateUpload(){alert('MEDHAR Pipeline:\n✅ Dosya yüklendi\n✅ KNN Imputer çalıştırıldı (K=5)\n✅ Etiket sızıntısı kontrolü tamamlandı\n✅ Özellik mühendisliği uygulandı\n\nAnaliz için ▶ Analizi Başlat butonuna tıklayın.');}
+function runAnalysis(){renderVariants();alert('✅ Analiz tamamlandı!\nLightGBM modeli kullanıldı.\nDinamik eşik uygulandı.');}
+
+// ── Explain bars ──
+const EXPLAIN_DATA={
+  VAR_004572:[
+    ['al_pathogenic_score (Consensus Score)', 0.20],
+    ['ek_freq_mean (Population Frequency)', 0.59],
+    ['aa_hydro_diff (Hydrophobicity Delta)', 0.50],
+    ['aa_charge_change (Charge Transition)', 1.00],
+    ['aa_molwt_diff (MW Delta)', 0.22],
+    ['al_mean (Mean In-Silico Score)', 0.45],
+    ['al_high_ratio (Deleterious Consensus)', 0.45],
+    ['pathogenic_idx (Score-Freq Index)', 0.00],
+    ['al_rarity (Rarity Score)', 0.13]
+  ],
+  VAR_001979:[
+    ['al_pathogenic_score (Consensus Score)', 0.21],
+    ['ek_freq_mean (Population Frequency)', 0.54],
+    ['aa_hydro_diff (Hydrophobicity Delta)', 0.55],
+    ['aa_charge_change (Charge Transition)', 0.00],
+    ['aa_molwt_diff (MW Delta)', 0.12],
+    ['al_mean (Mean In-Silico Score)', 0.47],
+    ['al_high_ratio (Deleterious Consensus)', 0.45],
+    ['pathogenic_idx (Score-Freq Index)', 0.00],
+    ['al_rarity (Rarity Score)', 0.12]
+  ],
+  VAR_002962:[
+    ['al_pathogenic_score (Consensus Score)', 0.16],
+    ['ek_freq_mean (Population Frequency)', 0.52],
+    ['aa_hydro_diff (Hydrophobicity Delta)', 0.05],
+    ['aa_charge_change (Charge Transition)', 0.00],
+    ['aa_molwt_diff (MW Delta)', 0.26],
+    ['al_mean (Mean In-Silico Score)', 0.41],
+    ['al_high_ratio (Deleterious Consensus)', 0.38],
+    ['pathogenic_idx (Score-Freq Index)', 0.00],
+    ['al_rarity (Rarity Score)', 0.15]
+  ],
+  VAR_006245:[
+    ['al_pathogenic_score (Consensus Score)', 0.19],
+    ['ek_freq_mean (Population Frequency)', 0.13],
+    ['aa_hydro_diff (Hydrophobicity Delta)', 0.10],
+    ['aa_charge_change (Charge Transition)', 0.00],
+    ['aa_molwt_diff (MW Delta)', 0.11],
+    ['al_mean (Mean In-Silico Score)', 0.45],
+    ['al_high_ratio (Deleterious Consensus)', 0.43],
+    ['pathogenic_idx (Score-Freq Index)', 0.43],
+    ['al_rarity (Rarity Score)', 0.26]
+  ]
+};
+
+const CLINVAR_DATA={
+  VAR_004572: { review: "★★★☆ (3/4)", submitters: "21", acmg: "Pathogenic", color: "var(--pathogenic)", freq: "0.00004" },
+  VAR_001979: { review: "★★☆☆ (2/4)", submitters: "9", acmg: "Pathogenic", color: "var(--pathogenic)", freq: "0.00012" },
+  VAR_002962: { review: "★★★☆ (3/4)", submitters: "15", acmg: "Benign", color: "var(--benign)", freq: "0.01432" },
+  VAR_006245: { review: "★☆☆☆ (1/4)", submitters: "3", acmg: "Benign (VUS)", color: "var(--warning)", freq: "0.00085" }
+};
+
+function renderExplainBars(varId){
+  const data=EXPLAIN_DATA[varId]||EXPLAIN_DATA['VAR_004572'];
+  const container=document.getElementById('explainBars');
+  container.innerHTML=data.map(([label,val])=>`
+    <div class="explain-item">
+      <div class="explain-label">${label}</div>
+      <div class="explain-bar-bg"><div class="explain-bar-fill" style="width:${val*100}%"></div></div>
+      <div class="explain-score">${val.toFixed(2)}</div>
+    </div>`).join('');
+}
+
+function updateExplain(val){
+  const summaries={
+    VAR_004572:'ℹ️ VAR_004572 (TP53) → Karar: <strong>PATOJENİK</strong> · Güven: %94 · τ=0.50',
+    VAR_001979:'ℹ️ VAR_001979 (CFTR) → Karar: <strong>PATOJENİK</strong> · Güven: %88 · τ=0.50',
+    VAR_002962:'ℹ️ VAR_002962 (BMPR2) → Karar: <strong>BENİGN</strong> · Güven: %12 · τ=0.50',
+    VAR_006245:'ℹ️ VAR_006245 (GNAS) → Karar: <strong>BENİGN (VUS)</strong> · Güven: %48 · τ=0.50'
+  };
+  const sumText = summaries[val] || summaries['VAR_004572'];
+  document.getElementById('explainSummary').innerHTML=sumText;
+  
+  // Update ClinVar Reference dynamically
+  const cv = CLINVAR_DATA[val] || CLINVAR_DATA['VAR_004572'];
+  document.getElementById('clinvarReview').textContent = cv.review;
+  document.getElementById('clinvarSubmitters').textContent = cv.submitters;
+  document.getElementById('clinvarAcmg').textContent = cv.acmg;
+  document.getElementById('clinvarAcmg').style.color = cv.color;
+  document.getElementById('clinvarFreq').textContent = cv.freq;
+
+  renderExplainBars(val);
+}
+
+// ── Perf table ──
+const PERF={
+  kanser:[['XGBoost','0.93412','0.92110','0.92756','0.97640'],['LightGBM ★','0.94125','0.93550','0.93837','0.98120'],['Random Forest','0.92240','0.91050','0.91641','0.96880']],
+  pah:[['XGBoost','0.91255','0.90440','0.90846','0.95880'],['LightGBM ★','0.92330','0.91660','0.91994','0.96640'],['Random Forest','0.90771','0.90120','0.90444','0.95110']],
+  cftr:[['XGBoost','0.94880','0.93215','0.94040','0.98220'],['LightGBM ★','0.95440','0.94110','0.94770','0.99010'],['Random Forest','0.93880','0.92550','0.93210','0.97950']],
+  genel:[['XGBoost ★','0.92660','0.93881','0.93266','0.97110'],['LightGBM','0.93221','0.92770','0.92995','0.97550'],['Random Forest','0.91942','0.92440','0.92190','0.96120']]
+};
+
+function selectPerfPanel(panel,btn){
+  document.querySelectorAll('.panel-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPerfTable(panel);
+}
+
+function renderPerfTable(panel){
+  const rows=PERF[panel]||PERF.kanser;
+  let html=`<table><thead><tr><th>Model</th><th>Duyarlılık</th><th>Kesinlik</th><th>F1</th><th>AUC</th></tr></thead><tbody>`;
+  rows.forEach(r=>{
+    const isB=r[0].includes('★');
+    html+=`<tr style="${isB?'background:#f0f9ff;font-weight:600':''}">
+      <td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td>
+      <td><strong style="color:var(--primary)">${r[3]}</strong></td>
+      <td><strong style="color:var(--benign)">${r[4]}</strong></td>
+    </tr>`;
+  });
+  html+=`</tbody></table>`;
+  document.getElementById('perfTable').innerHTML=html;
+}
+
+// ── Train simulation ──
+function simulateTrain(){
+  const log=document.getElementById('trainLog');
+  const steps=[
+    ['Veri hazırlama: KNN Imputer, ölçeklendirme...','var(--accent)'],
+    ['Eğitim başlatıldı: Fold 1/5...','var(--accent)'],
+    ['Fold 1 tamamlandı — F1: 0.9312','var(--benign)'],
+    ['Fold 2-5 tamamlandı — Ort. F1: 0.9384','var(--benign)'],
+    ['Hiperparametre optimizasyonu: Grid Search...','var(--warning)'],
+    ['Dinamik eşik kalibrasyonu yapıldı','var(--accent)'],
+    ['✅ Eğitim tamamlandı! Model production ortamına alındı','var(--benign)'],
+  ];
+  log.innerHTML='';
+  let i=0;
+  const interval=setInterval(()=>{
+    if(i>=steps.length){clearInterval(interval);return;}
+    const [text,color]=steps[i];
+    const now=new Date().toLocaleTimeString('tr-TR');
+    log.innerHTML+=`<div class="log-item"><div class="log-dot" style="background:${color}"></div><div><div class="log-text">${text}</div><div class="log-time">${now}</div></div></div>`;
+    log.scrollTop=log.scrollHeight;
+    i++;
+  },700);
+}
+
+// Init slider gradient
+document.addEventListener('DOMContentLoaded',()=>{
+  const s=document.getElementById('thresholdSlider');
+  if(s) updateThreshold(s.value);
+});
+</script>
+</body>
+</html>
