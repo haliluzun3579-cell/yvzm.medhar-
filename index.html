@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MEDHAR — Klinik Karar Destek Sistemi</title>
 <meta name="description" content="MEDHAR Genomik Karar Destek Sistemi — Yapay zeka destekli varyant analiz platformu">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -715,7 +716,15 @@ tr:hover td{background:#fafbff}
           <div class="btn-loader"></div>
         </button>
         <p style="text-align:center;font-size:.82rem;color:var(--muted);margin-top:16px">
-          Hesabınız yok mu? <button class="auth-link" onclick="switchAuthTab('register')" style="display:inline">Kayıt Ol</button>
+          Hesabınız yok mu? <button type="button" class="auth-link" onclick="switchAuthTab('register')" style="display:inline">Kayıt Ol</button>
+        </p>
+        
+        <hr style="border:0; height:1px; background:#e5e7eb; margin:24px 0 16px 0;">
+        <button type="button" class="auth-btn ripple" style="background:#4b5563; color:white; margin-bottom:12px; height:46px; font-weight:600;" onclick="doAdminQuickLogin()">
+          <span class="btn-text">Admin Olarak Hızlı Giriş Yap ⚡</span>
+        </button>
+        <p style="text-align:center; font-size:0.75rem; color:var(--muted); line-height:1.4; margin:0;">
+          Kullanıcı mailleri ve şifreleri her bir kullanıcı için özel olduğundan sitenin bütün işlevlerini gözlemleyebilmede rahatlık olması için koyulmuştur.
         </p>
       </div>
 
@@ -1336,6 +1345,12 @@ async function doLogin() {
 
   currentUser = data.user;
   currentRole = data.user.user_metadata?.role || 'klinisyen';
+  showApp();
+}
+
+function doAdminQuickLogin() {
+  currentUser = { email: 'demo@admin.com', user_metadata: { full_name: 'Demo Admin', role: 'admin' } };
+  currentRole = 'admin';
   showApp();
 }
 
