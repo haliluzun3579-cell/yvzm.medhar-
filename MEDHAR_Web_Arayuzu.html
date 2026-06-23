@@ -216,18 +216,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 }
 .auth-wrapper{
   display:flex;width:900px;max-width:96%;
+  height:580px;
   background:white;border-radius:22px;
   box-shadow:0 30px 70px rgba(0,0,0,0.12);overflow:hidden;
-  align-items:stretch;
 }
 
 /* Left panel */
 .auth-left{
-  flex:0 0 320px;
+  flex:0 0 320px;height:100%;
   background:linear-gradient(145deg,var(--primary-dark) 0%,var(--primary) 60%,var(--primary-light) 100%);
   padding:40px 36px;display:flex;flex-direction:column;justify-content:center;align-items:center;
   text-align:center;color:white;position:relative;overflow:hidden;flex-shrink:0;
-  min-height:520px;
 }
 .auth-left::before{
   content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
@@ -253,7 +252,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 /* Right panel */
 .auth-right{
-  flex:1;padding:36px 44px;display:flex;flex-direction:column;justify-content:flex-start;
+  flex:1;height:100%;padding:28px 40px;
+  display:flex;flex-direction:column;justify-content:flex-start;
   position:relative;overflow-y:auto;overflow-x:hidden;
 }
 
