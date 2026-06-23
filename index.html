@@ -1076,10 +1076,7 @@ tr:hover td{background:#fafbff}
                 <table>
                   <thead><tr><th>Ad Soyad</th><th>E-posta</th><th>Rol</th><th>Son Giriş</th><th>İşlem</th></tr></thead>
                   <tbody id="adminUserList">
-                    <tr><td>Dr. Ayşe Kaya</td><td>klinisyen@medhar.tr</td><td><span class="role-chip role-klinisyen">Klinisyen</span></td><td>Bugün</td><td><button class="btn btn-secondary" style="padding:3px 10px;font-size:.72rem" onclick="openEditUser('Dr. Ayşe Kaya','klinisyen')">Düzenle</button></td></tr>
-                    <tr><td>Dr. Mehmet Demir</td><td>uzman@medhar.tr</td><td><span class="role-chip role-uzman">Gen. Uzman</span></td><td>Dün</td><td><button class="btn btn-secondary" style="padding:3px 10px;font-size:.72rem" onclick="openEditUser('Dr. Mehmet Demir','uzman')">Düzenle</button></td></tr>
-                    <tr><td>Zeynep Yıldız</td><td>analist@medhar.tr</td><td><span class="role-chip role-analist">Analist</span></td><td>2 gün</td><td><button class="btn btn-secondary" style="padding:3px 10px;font-size:.72rem" onclick="openEditUser('Zeynep Yıldız','analist')">Düzenle</button></td></tr>
-                    <tr><td>Sistem Admin</td><td>admin@medhar.tr</td><td><span class="role-chip role-admin">Admin</span></td><td>Bugün</td><td><button class="btn btn-secondary" style="padding:3px 10px;font-size:.72rem" onclick="openEditUser('Sistem Admin','admin')">Düzenle</button></td></tr>
+                    <tr><td colspan="5" style="text-align:center; padding:15px">Veriler yükleniyor...</td></tr>
                   </tbody>
                 </table>
               </div>
@@ -1440,10 +1437,21 @@ function buildNav(items) {
     const d = document.createElement('div');
     d.className = 'nav-item';
     d.innerHTML = `<span class="icon">${item.icon}</span><span>${item.text}</span>`;
-    d.onclick = () => showPanel(item.panel, d);
+    d.onclick = () => switchPanel(item.panel);
     nav.appendChild(d);
   });
   nav.querySelector('.nav-item').classList.add('active');
+}
+
+function switchPanel(panelId) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + panelId).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+  if (panelId === 'admin') {
+    document.getElementById('adminUserList').innerHTML = '';
+    loadAdminUsers();
+  }
 }
 
 function showPanel(panelId, navEl) {
@@ -1682,10 +1690,7 @@ function updateExplain(val) {
 }
 
 // ════════════════════════════════════════
-// PERF TABLE
-// ════════════════════════════════════════
-// ════════════════════════════════════════
-// MATRIX EMOĞİ YAĞMURU (auth sayfa arkaplanı)
+// MATRIX EMOĞİ YAĞMURU
 // ════════════════════════════════════════
 const authCanvas = document.createElement('canvas');
 authCanvas.id = 'auth-matrix-canvas';
@@ -1751,12 +1756,12 @@ window.addEventListener('resize', () => {
 // TIKLANINCA DEĞİŞEN RİNG (auth wrapper)
 // ════════════════════════════════════════
 const RING_COLORS = [
-  '37,99,235',   // primary-light (mavi)
-  '14,165,233',  // accent (açık mavi)
-  '30,58,138',   // primary-dark (koyu mavi)
-  '99,102,241',  // indigo
-  '59,130,246',  // blue-400
-  '147,197,253', // blue-200
+  '37,99,235',
+  '14,165,233',
+  '30,58,138',
+  '99,102,241',
+  '59,130,246',
+  '147,197,253',
 ];
 let ringColorIdx = 0;
 let ringTimeout = null;
