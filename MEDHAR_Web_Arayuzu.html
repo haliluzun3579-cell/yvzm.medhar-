@@ -113,8 +113,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   background:linear-gradient(135deg,var(--primary-dark) 0%,var(--primary-light) 50%,var(--accent) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   letter-spacing:3px;line-height:1;margin-bottom:16px;
-  cursor:default;transition:filter 0.06s linear;
-  will-change:filter;
 }
 .landing-hero-sub{
   font-size:1.1rem;color:var(--muted);font-weight:400;margin-bottom:48px;max-width:520px;margin-left:auto;margin-right:auto;
@@ -327,12 +325,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .auth-msg.error{background:#fee2e2;border:1px solid #fecaca;color:var(--pathogenic);display:flex;gap:8px}
 .auth-msg.success{background:#d1fae5;border:1px solid #a7f3d0;color:var(--benign);display:flex;gap:8px}
 
-/* Falling emojis */
-.emoji-drop{
-  position:absolute;top:-40px;opacity:0.15;
-  user-select:none;pointer-events:none;
-  animation:fall linear infinite;z-index:0;
-}
 .auth-right > *{position:relative;z-index:2}
 
 /* ══════════════════════════════════════
@@ -1673,39 +1665,6 @@ function updateExplain(val) {
 // PERF TABLE
 // ════════════════════════════════════════
 // ════════════════════════════════════════
-// MEDHAR 3D KATMAN EFEKTI (mouse tracking)
-// ════════════════════════════════════════
-const medharTitle = document.getElementById('medharTitle');
-document.addEventListener('mousemove', (e) => {
-  if (!medharTitle) return;
-  const cx = window.innerWidth / 2;
-  const cy = window.innerHeight / 2;
-  const dx = (e.clientX - cx) / cx;  // -1 to 1
-  const dy = (e.clientY - cy) / cy;  // -1 to 1
-  const maxShift = 18;
-  const numLayers = 14;
-  let shadows = [];
-  for (let i = 1; i <= numLayers; i++) {
-    const t = i / numLayers;
-    const x = (dx * maxShift * t).toFixed(2);
-    const y = (dy * maxShift * t).toFixed(2);
-    const blur = (t * 3).toFixed(1);
-    // Renk paleti: koyu maviden accent'e geçiş
-    const alpha = (0.18 - t * 0.1).toFixed(3);
-    const r = Math.round(30 + t * 7);
-    const g = Math.round(58 + t * 41);
-    const b = Math.round(138 + t * 97);
-    shadows.push(`drop-shadow(${x}px ${y}px ${blur}px rgba(${r},${g},${b},${alpha}))`);
-  }
-  // Ana parlama efekti
-  shadows.push(`drop-shadow(${(dx*4).toFixed(2)}px ${(dy*4).toFixed(2)}px 20px rgba(37,99,235,0.2))`);
-  medharTitle.style.filter = shadows.join(' ');
-});
-document.addEventListener('mouseleave', () => {
-  if(medharTitle) medharTitle.style.filter = 'none';
-});
-
-// ════════════════════════════════════════
 // MATRIX EMOĞİ YAĞMURU (auth sayfa arkaplanı)
 // ════════════════════════════════════════
 const authCanvas = document.createElement('canvas');
@@ -1908,26 +1867,6 @@ async function addNewUser() {
   alert(`✅ ${name} başarıyla eklendi.`);
 }
 
-// ════════════════════════════════════════
-// FALLING EMOJIS
-// ════════════════════════════════════════
-let emojiInterval = null;
-function createFallingEmojis() {
-  const right = document.getElementById('authRight');
-  if(!right || emojiInterval) return;
-  const emojis = ['🩺','💉','💊','🧬','⚕️','🔬','🧫','🏥','🩹','🩸','🦠','🫀','🫁','🧪'];
-  emojiInterval = setInterval(() => {
-    if(document.getElementById('authPage').style.display === 'none') return;
-    const el = document.createElement('div');
-    el.className = 'emoji-drop';
-    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-    el.style.left = Math.random()*90+5 + '%';
-    el.style.animationDuration = (Math.random()*3+4) + 's';
-    el.style.fontSize = (Math.random()*1.2+1.3) + 'rem';
-    right.appendChild(el);
-    setTimeout(() => { if(el.parentNode) el.remove(); }, 7500);
-  }, 500);
-}
 
 // ════════════════════════════════════════
 // CANVAS PARTICLES
