@@ -113,6 +113,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   background:linear-gradient(135deg,var(--primary-dark) 0%,var(--primary-light) 50%,var(--accent) 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
   letter-spacing:3px;line-height:1;margin-bottom:16px;
+  cursor:default;transition:filter 0.06s linear;
+  will-change:filter;
 }
 .landing-hero-sub{
   font-size:1.1rem;color:var(--muted);font-weight:400;margin-bottom:48px;max-width:520px;margin-left:auto;margin-right:auto;
@@ -562,19 +564,17 @@ tr:hover td{background:#fafbff}
   <!-- Hero -->
   <div class="landing-hero">
     <div class="landing-hero-tag fade-in">🧬 Genomik Karar Destek Sistemi</div>
-    <h1 class="fade-in delay-1">MEDHAR</h1>
+    <h1 class="fade-in delay-1" id="medharTitle">MEDHAR</h1>
     <p class="landing-hero-sub fade-in delay-2">Yapay zeka ile güçlendirilmiş genomik varyant analiz platformu. Klinisyenler, uzmanlar ve analistler için tasarlandı.</p>
 
     <div class="landing-team fade-in delay-3">
       <div class="team-card floating">
         <img src="yasin.png" alt="Nuh Yasin Çimen" class="team-avatar" onerror="this.style.background='#dbeafe';this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 140 140%22><circle cx=%2270%22 cy=%2255%22 r=%2228%22 fill=%22%232563eb%22/><ellipse cx=%2270%22 cy=%22105%22 rx=%2242%22 ry=%2230%22 fill=%22%232563eb%22/></svg>'">
         <div class="team-name">Nuh Yasin Çimen</div>
-        <div class="team-role">Yazılım Geliştirici</div>
       </div>
       <div class="team-card floating" style="animation-delay:1.5s">
         <img src="halil.png" alt="Halil Hadra Uzun" class="team-avatar" onerror="this.style.background='#dbeafe';this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 140 140%22><circle cx=%2270%22 cy=%2255%22 r=%2228%22 fill=%22%232563eb%22/><ellipse cx=%2270%22 cy=%22105%22 rx=%2242%22 ry=%2230%22 fill=%22%232563eb%22/></svg>'">
         <div class="team-name">Halil Hadra Uzun</div>
-        <div class="team-role">Yazılım Geliştirici</div>
       </div>
     </div>
   </div>
@@ -1672,6 +1672,132 @@ function updateExplain(val) {
 // ════════════════════════════════════════
 // PERF TABLE
 // ════════════════════════════════════════
+// ════════════════════════════════════════
+// MEDHAR 3D KATMAN EFEKTI (mouse tracking)
+// ════════════════════════════════════════
+const medharTitle = document.getElementById('medharTitle');
+document.addEventListener('mousemove', (e) => {
+  if (!medharTitle) return;
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+  const dx = (e.clientX - cx) / cx;  // -1 to 1
+  const dy = (e.clientY - cy) / cy;  // -1 to 1
+  const maxShift = 18;
+  const numLayers = 14;
+  let shadows = [];
+  for (let i = 1; i <= numLayers; i++) {
+    const t = i / numLayers;
+    const x = (dx * maxShift * t).toFixed(2);
+    const y = (dy * maxShift * t).toFixed(2);
+    const blur = (t * 3).toFixed(1);
+    // Renk paleti: koyu maviden accent'e geçiş
+    const alpha = (0.18 - t * 0.1).toFixed(3);
+    const r = Math.round(30 + t * 7);
+    const g = Math.round(58 + t * 41);
+    const b = Math.round(138 + t * 97);
+    shadows.push(`drop-shadow(${x}px ${y}px ${blur}px rgba(${r},${g},${b},${alpha}))`);
+  }
+  // Ana parlama efekti
+  shadows.push(`drop-shadow(${(dx*4).toFixed(2)}px ${(dy*4).toFixed(2)}px 20px rgba(37,99,235,0.2))`);
+  medharTitle.style.filter = shadows.join(' ');
+});
+document.addEventListener('mouseleave', () => {
+  if(medharTitle) medharTitle.style.filter = 'none';
+});
+
+// ════════════════════════════════════════
+// MATRIX EMOĞİ YAĞMURU (auth sayfa arkaplanı)
+// ════════════════════════════════════════
+const authCanvas = document.createElement('canvas');
+authCanvas.id = 'auth-matrix-canvas';
+authCanvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.55;';
+const authPage = document.getElementById('authPage');
+authPage.style.position = 'relative';
+authPage.insertBefore(authCanvas, authPage.firstChild);
+const actx = authCanvas.getContext('2d');
+
+const EMOJIS = ['🩺','💉','💊','🧬','⚕️','🔬','🧫','🏥','🩹','🩸','🦠','🫀','🫁','🧪'];
+const COLS = 28;
+let drops = [];
+let authAnimId = null;
+
+function initMatrix() {
+  authCanvas.width = authPage.offsetWidth || window.innerWidth;
+  authCanvas.height = authPage.offsetHeight || window.innerHeight;
+  const colW = authCanvas.width / COLS;
+  drops = Array.from({length: COLS}, (_, i) => ({
+    x: i * colW + colW/2,
+    y: -Math.random() * authCanvas.height,
+    speed: Math.random() * 1.2 + 0.6,
+    emoji: EMOJIS[Math.floor(Math.random()*EMOJIS.length)],
+    size: Math.random() * 8 + 16,
+    opacity: Math.random() * 0.12 + 0.06
+  }));
+}
+
+function drawMatrix() {
+  if(authPage.style.display === 'none') { authAnimId = null; return; }
+  actx.clearRect(0, 0, authCanvas.width, authCanvas.height);
+  drops.forEach(d => {
+    actx.font = `${d.size}px serif`;
+    actx.globalAlpha = d.opacity;
+    actx.fillText(d.emoji, d.x - d.size/2, d.y);
+    d.y += d.speed;
+    if(d.y > authCanvas.height + 40) {
+      d.y = -40;
+      d.emoji = EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+      d.opacity = Math.random() * 0.12 + 0.06;
+    }
+  });
+  actx.globalAlpha = 1;
+  authAnimId = requestAnimationFrame(drawMatrix);
+}
+
+function startMatrix() {
+  if(!authAnimId) {
+    initMatrix();
+    drawMatrix();
+  }
+}
+
+function createFallingEmojis() {
+  startMatrix();
+}
+
+window.addEventListener('resize', () => {
+  if(authPage.style.display !== 'none') initMatrix();
+});
+
+// ════════════════════════════════════════
+// TIKLANINCA DEĞİŞEN RİNG (auth wrapper)
+// ════════════════════════════════════════
+const RING_COLORS = [
+  '37,99,235',   // primary-light (mavi)
+  '14,165,233',  // accent (açık mavi)
+  '30,58,138',   // primary-dark (koyu mavi)
+  '99,102,241',  // indigo
+  '59,130,246',  // blue-400
+  '147,197,253', // blue-200
+];
+let ringColorIdx = 0;
+let ringTimeout = null;
+
+const authWrapper = document.querySelector('.auth-wrapper');
+if(authWrapper) {
+  authWrapper.style.transition = 'box-shadow 0.35s cubic-bezier(0.25,0.8,0.25,1)';
+  authPage.addEventListener('click', (e) => {
+    if(authPage.style.display === 'none') return;
+    ringColorIdx = (ringColorIdx + 1) % RING_COLORS.length;
+    const c = RING_COLORS[ringColorIdx];
+    authWrapper.style.boxShadow =
+      `0 30px 70px rgba(0,0,0,0.12), 0 0 0 1.5px rgba(${c},0.55), 0 0 18px 2px rgba(${c},0.18)`;
+    clearTimeout(ringTimeout);
+    ringTimeout = setTimeout(() => {
+      authWrapper.style.boxShadow = '0 30px 70px rgba(0,0,0,0.12)';
+    }, 2000);
+  });
+}
+
 const PERF = {
   kanser:[['XGBoost','0.93412','0.92110','0.92756','0.97640'],['LightGBM ★','0.94125','0.93550','0.93837','0.98120'],['Random Forest','0.92240','0.91050','0.91641','0.96880']],
   pah:[['XGBoost','0.91255','0.90440','0.90846','0.95880'],['LightGBM ★','0.92330','0.91660','0.91994','0.96640'],['Random Forest','0.90771','0.90120','0.90444','0.95110']],
